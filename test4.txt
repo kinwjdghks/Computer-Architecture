@@ -1,0 +1,14 @@
+inst 0: 000010b7 lui x1, 4096
+inst 1: 000120b7 lui x1, 73728
+inst 2: 001230b7 lui x1, 1191936
+inst 3: 012340b7 lui x1, 19087360
+inst 4: 123450b7 lui x1, 305418240
+inst 5: 800000b7 lui x1, -2147483648
+inst 6: fffff0b7 lui x1, -4096
+inst 7: 00fcb117 auipc x2, 16560128
+inst 8: 0180056f jal x10, 24
+inst 9: fe5ff56f jal x10, -28
+inst 10: 064a0567 jalr x10, 100(x20)
+inst 11: 7d50f56f jal x10, 65492
+inst 12: 3181256f jal x10, 74520
+inst 13: 00000013 addi x0, x0, 0

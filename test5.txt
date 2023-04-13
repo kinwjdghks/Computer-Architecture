@@ -1,0 +1,37 @@
+inst 0: 001230b7 lui x1, 1191936
+inst 1: 0007b117 auipc x2, 503808
+inst 2: 7f90f1ef jal x3, 65528
+inst 3: 12c28267 jalr x4, 300(x5)
+inst 4: 00730063 beq x6, x7, 0
+inst 5: fe731ee3 bne x6, x7, -4
+inst 6: fe734ce3 blt x6, x7, -8
+inst 7: fe735ae3 bge x6, x7, -12
+inst 8: fe7368e3 bltu x6, x7, -16
+inst 9: fe7376e3 bgeu x6, x7, -20
+inst 10: 00048403 lb x8, 0(x9)
+inst 11: 00049403 lh x8, 0(x9)
+inst 12: 0004a403 lw x8, 0(x9)
+inst 13: 0004c403 lbu x8, 0(x9)
+inst 14: 0004d403 lhu x8, 0(x9)
+inst 15: 00a58523 sb x10, 10(x11)
+inst 16: 00a59723 sh x10, 14(x11)
+inst 17: 00a5a923 sw x10, 18(x11)
+inst 18: 06468613 addi x12, x13, 100
+inst 19: 0c87a713 slti x14, x15, 200
+inst 20: f388b813 sltiu x16, x17, -200
+inst 21: 12c9c913 xori x18, x19, 300
+inst 22: 190aea13 ori x20, x21, 400
+inst 23: 1f4bfb13 andi x22, x23, 500
+inst 24: 01fc9c13 slli x24, x25, 31
+inst 25: 000cdc13 srli x24, x25, 0
+inst 26: 404cdc13 srai x24, x25, 4
+inst 27: 01cd8d33 add x26, x27, x28
+inst 28: 41cd8d33 sub x26, x27, x28
+inst 29: 01cd9d33 sll x26, x27, x28
+inst 30: 01cdad33 slt x26, x27, x28
+inst 31: 01cdbd33 sltu x26, x27, x28
+inst 32: 01cdcd33 xor x26, x27, x28
+inst 33: 01cddd33 srl x26, x27, x28
+inst 34: 41cddd33 sra x26, x27, x28
+inst 35: 01cded33 or x26, x27, x28
+inst 36: 01cdfd33 and x26, x27, x28

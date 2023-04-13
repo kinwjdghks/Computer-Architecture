@@ -1,0 +1,8 @@
+inst 0: 123a0513 addi x10, x20, 291
+inst 1: 7fff2293 slti x5, x30, 2047
+inst 2: fffa0513 addi x10, x20, -1
+inst 3: 8004f393 andi x7, x9, -2048
+inst 4: 014a2983 lw x19, 20(x20)
+inst 5: e1302603 lw x12, -493(x0)
+inst 6: 01f1a023 sw x31, 0(x3)
+inst 7: 00122523 sw x1, 10(x4)

@@ -1,0 +1,9 @@
+inst 0: 07ba0513 addi x10, x20, 123
+inst 1: 00b50a63 beq x10, x11, 20
+inst 2: 403100b3 sub x1, x2, x3
+inst 3: 00000013 addi x0, x0, 0
+inst 4: 0083f4b3 and x9, x7, x8
+inst 5: 00224333 xor x6, x4, x2
+inst 6: 00452203 lw x4, 4(x10)
+inst 7: fe434ae3 blt x6, x4, -12
+inst 8: 00000013 addi x0, x0, 0
