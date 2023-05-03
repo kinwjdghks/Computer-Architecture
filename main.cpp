@@ -82,11 +82,39 @@ class RiscvSim{
         initialize_Mem();
         PC = 0;
     }
+    
+    void printinst(unsigned int inst){
+        for(int i=31;i>=0;i--){
+            if(inst&(1<<i)) printf("1");
+            else printf("0");
+        }
+        printf("\n");
+        return;
+    }
+
+    void read_binary_file(ifstream & fp){
+        unsigned int data;
+        int address = 1<<28;
+        fp.seekg(0,ios::end);
+        streampos len = fp.tellg();
+        fp.seekg(0,ios::beg);
+        while(fp.tellg() != len){
+            fp.read(reinterpret_cast<char*>(&data), sizeof(data));
+            write_Mem(address,data);
+            // printf("cur: %d\n",(int)fp.tellg());
+            // printf("%08x\n",data);
+            address += 4;
+        }
+        return;
+    }
 
     void read_one_inst(ifstream& fp){
         unsigned int buffer;
+        // printf("PC: %08x\n",PC);
         fp.seekg(PC,ios::beg); //FORMAT inst updatedg); //set PC
         fp.read(reinterpret_cast<char*>(&buffer), sizeof(buffer));
+        // printf("inst: ");
+        // printinst(buffer);
         parse(buffer); //FORMAT inst updated
         return;
     }
@@ -115,11 +143,7 @@ class RiscvSim{
     }
 
     int sign_extension(int prev, int size){
-
-    if((prev&(1<<(size-1)))!=0){
-        return (prev | (-1 << size));
-    }
-    else return prev;
+    return (prev << (32 - size)) >> (32 - size);
     }
 
     void executeDisassembledInst(){
@@ -185,6 +209,7 @@ class RiscvSim{
             else if(inst.Iformat.funct3==0x5){//srli
                 reg[inst.Iformat.rd] = (int)((unsigned int)reg[inst.Iformat.rs1] >> imm);
             }
+            
             PC += 4;
             break;
 
@@ -199,13 +224,18 @@ class RiscvSim{
                     reg[inst.Iformat.rd] = read_Mem(address);
                 }
             }
+    
             PC += 4;
             break;
 
         case 0x67: //I Format jalr
             imm = sign_extension(inst.Iformat.imm,12);
-            reg[inst.UJformat.rd] = PC + 4; //link
+            int PC_temp;
+            // printf("imm: %08x rs1: %d:%08x\n",imm,inst.Iformat.rs1,reg[inst.Iformat.rs1]);
+            PC_temp = PC;
             PC = reg[inst.Iformat.rs1]+imm;
+            reg[inst.Iformat.rd] = PC_temp + 4; //link
+            // printf("then, PC = %08x\n",PC);
             break;
             
 
@@ -221,31 +251,31 @@ class RiscvSim{
                     write_Mem(address,reg[inst.Sformat.rs2]);
                 }
             }
+            
             PC += 4;
             break;
 
         case 0x63: //SB Format
             imm = sign_extension((inst.SBformat.imm1<<11)|(inst.SBformat.imm2<<1)|(inst.SBformat.imm3<<5)|(inst.SBformat.imm4<<12),13);
             if(inst.SBformat.funct3==0x0){ //beq
-                if(reg[inst.SBformat.rs1] == reg[inst.SBformat.rs2]) PC = imm;
+                if(reg[inst.SBformat.rs1] == reg[inst.SBformat.rs2]) PC += imm;
                 else PC += 4; 
             }
             else if(inst.SBformat.funct3==0x1){//bne
-                if(reg[inst.SBformat.rs1] != reg[inst.SBformat.rs2]) PC = imm;
+                if(reg[inst.SBformat.rs1] != reg[inst.SBformat.rs2]) PC += imm;
                 else PC += 4; 
             }
 
             else if(inst.SBformat.funct3==0x4){//blt
-                if(reg[inst.SBformat.rs1] < reg[inst.SBformat.rs2]) PC = imm;
+                if(reg[inst.SBformat.rs1] < reg[inst.SBformat.rs2]) PC += imm;
                 else PC += 4; 
             }
             else if(inst.SBformat.funct3==0x5){//bge
-                if(reg[inst.SBformat.rs1] >= reg[inst.SBformat.rs2]) PC = imm;
+                if(reg[inst.SBformat.rs1] >= reg[inst.SBformat.rs2]) PC += imm;
                 else PC += 4; 
             }
 
-            else
-                printf("unknown instruction");
+            else printf("unknown instruction SB");
             
             break;
         case 0x17: //U Format auipc
@@ -262,16 +292,14 @@ class RiscvSim{
 
         case 0x6F: //UJ Format jal
             imm = sign_extension((inst.UJformat.imm1<<12)|(inst.UJformat.imm2<<11)|(inst.UJformat.imm3<<1)|(inst.UJformat.imm4<<20),21);
+            // printf("imm: %08x, rd: %d\n",imm,inst.UJformat.rd);
             reg[inst.UJformat.rd] = PC + 4; //link
-            PC = imm;
+            PC += imm;
             
             break;
-
-        default:
-            printf("unknown instruction");
-            break;
-        
+        default: printf("unknown instruction default\n");
         }
+        
         reg[0] = 0; // reset x0 in case of change
         return;
     }
@@ -385,36 +413,29 @@ class RiscvSim{
 int main(int argc,char* argv[]){
 
     int instNum;
-    int instcount = 0;
-    int PC = 0;
-
+    int instCount=0;
+    
     RiscvSim Riscv = RiscvSim();
-    if(argc == 2){
-        instNum = stoi(argv[2]);
+
+    if(argc == 3){
+         instNum = stoi(argv[2]);
     }
     else{
         instNum = stoi(argv[3]);
-        /*
-        int data;
-        int address = 1<<28;
+        
         ifstream df(argv[2], ios::binary);
-        while(df.is_open()){
-            df.read(reinterpret_cast<char*>(&data), sizeof(data));
-            Riscv.write_Mem(address,data);
-            address += 4;
-        }
+        Riscv.read_binary_file(df);
         df.close();
-        */
     }
-
+    
     ifstream fp(argv[1], ios::binary);   
-    /*
-    while(fp.is_open() && instcount < instNum){
-        fp.seekg(PC,ios::beg); //update PC
+    
+    while(fp.is_open() && instCount < instNum){
         Riscv.read_one_inst(fp);
-        instcount++;
+        Riscv.executeDisassembledInst();
+        instCount++;
     }
     Riscv.printRegs();
-    */
+    
     return 0;
 }
